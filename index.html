@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset='UTF-8'>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>调查</title>
+</head>
+<body>
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <div id="调查">
+        <p>调查进度: {{进度}}/{{总量}}</p>
+        <p>{{结果}}</p>
+        <p>掷点结果:</p>
+        <ul v-if="列表.length" style="list-style-type:square; height: 100px;width: 200px;overflow-y: scroll;">
+            <li v-for="item of 列表">{{item}}</li>
+        </ul>
+    </div>
+    
+    <script>
+        const 总量 = 100;
+        const 掷点间隔 = 1000;
+        const { createApp } = Vue;
+        createApp({
+            data() {
+                return {
+                    进度: 0,总量:总量,
+                    结果:"",列表:[],已出结果:false
+                }
+            },
+            mounted() {
+                const 计时器 = setInterval(this.累计进度, 掷点间隔);
+            },
+            methods: {
+                累计进度() {
+                    if(this.进度<总量){
+                        let 点 = Math.floor(Math.random() * 12) + 1;
+                        this.列表.push(点);
+                        this.进度 += 点;
+                    }
+                    if(this.进度>=总量){
+                        this.进度=总量
+                        if(!this.已出结果){
+                            this.随机出结果()
+                        }
+                    }
+                },
+                随机出结果(){
+                    let 结果1 = "调查完成,为一宜居星球"
+                    let 结果2 = "调查完成,为一死寂星球"
+                    let 结果3 = "调查完成,该星球存在开智物种"
+                    let 结果4 = "调查失败,调查进度已重置"
+                    const 随机值 = Math.floor(Math.random()*10000)+1
+                    //调查失败
+                    if(随机值<500){
+                        this.结果=结果4
+                        this.进度 = 0
+                    }
+                    //正常结果
+                    else{
+                        if(随机值<2000){
+                            this.结果=结果1
+                        }
+                        else if(随机值<3000){
+                            this.结果=结果3
+                        }
+                        else{
+                            this.结果=结果2
+                        }
+                        clearInterval(this.计时器)
+                        this.已出结果=true
+                    }
+                }
+            }
+        }).mount('#调查');
+    </script>
+</body>
+</html>
